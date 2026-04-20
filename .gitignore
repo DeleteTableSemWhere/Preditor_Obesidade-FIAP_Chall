@@ -1,0 +1,13 @@
+.env
+__pycache__/
+*.pyc
+.venv/
+venv/
+ml/model.pkl
+ml/model_*.pkl
+ml/label_encoder.pkl
+ml/label_encoder_*.pkl
+ml/metrics.json
+ml/metrics_history.jsonl
+data/
+.streamlit/secrets.toml

@@ -1,0 +1,13 @@
+version: "3.9"
+
+services:
+  obesity_predict:
+    build: .
+    container_name: obesity_predict
+    ports:
+      - "8501:8501"
+    # Lê SUPABASE_URL e SUPABASE_KEY do arquivo .env local
+    # O .env NÃO é copiado para dentro da imagem — apenas injetado em runtime
+    env_file:
+      - .env
+    restart: unless-stopped

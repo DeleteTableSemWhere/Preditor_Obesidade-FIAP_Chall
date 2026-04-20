@@ -1,0 +1,87 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  verificar:
+    name: Verificação de qualidade
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Clonar repositório
+        uses: actions/checkout@v4
+
+      - name: Configurar Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Instalar dependências
+        run: |
+          pip install --upgrade pip
+          pip install -r requirements.txt
+          pip install flake8
+
+      - name: Verificar sintaxe Python (erros críticos)
+        # Seleciona apenas erros fatais: sintaxe inválida, imports indefinidos,
+        # nomes não definidos — ignora avisos de estilo (linha longa, etc.)
+        run: |
+          flake8 . \
+            --count \
+            --select=E9,F63,F7,F82 \
+            --show-source \
+            --statistics \
+            --exclude=.git,__pycache__,.venv,venv
+
+      - name: Verificar arquivos essenciais
+        # Aviso apenas — model.pkl pode não estar no repositório (git-ignored)
+        run: |
+          echo "=== Verificando arquivos essenciais ==="
+          arquivos=(
+            "app/Home.py"
+            "requirements.txt"
+            "ml/train.py"
+            "ml/predict.py"
+            "db/supabase_client.py"
+            "db/ingest_csv.py"
+          )
+          for f in "${arquivos[@]}"; do
+            if [ -f "$f" ]; then
+              echo "✅  $f"
+            else
+              echo "❌  $f — AUSENTE"
+              exit 1
+            fi
+          done
+
+          # Artefatos de ML são opcionais no repositório (podem ser gerados no deploy)
+          artefatos_ml=("ml/model.pkl" "ml/label_encoder.pkl" "ml/metrics.json")
+          for f in "${artefatos_ml[@]}"; do
+            if [ -f "$f" ]; then
+              echo "✅  $f (artefato ML presente)"
+            else
+              echo "⚠️   $f — não encontrado (normal se git-ignored)"
+            fi
+          done
+
+      - name: Exibir métricas do modelo
+        # Lê ml/metrics.json e imprime acurácia no log do CI
+        run: |
+          if [ -f "ml/metrics.json" ]; then
+            python - <<'EOF'
+          import json
+          with open("ml/metrics.json") as f:
+              m = json.load(f)
+          print("=" * 40)
+          print(f"Acurácia hold-out : {m['test_accuracy']:.1%}")
+          print(f"Acurácia CV média : {m['cv_mean']:.1%} ± {m['cv_std']:.1%}")
+          print(f"Classes            : {', '.join(m['class_names'])}")
+          print("=" * 40)
+          EOF
+          else
+            echo "⚠️  ml/metrics.json não encontrado — execute ml/train.py para gerar."
+          fi

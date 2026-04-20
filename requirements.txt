@@ -1,0 +1,9 @@
+streamlit>=1.45.0
+scikit-learn>=1.6.1
+pandas>=2.2.3
+numpy>=2.2.5
+supabase>=2.15.0
+python-dotenv>=1.1.0
+joblib>=1.4.2
+plotly>=6.0.1
+imbalanced-learn>=0.13.0

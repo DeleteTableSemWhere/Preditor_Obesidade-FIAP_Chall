@@ -1,0 +1,32 @@
+# Credenciais e ambiente local — nunca entram na imagem
+.env
+*.env
+
+# Dados brutos e artefatos gerados offline
+data/
+ml/__pycache__/
+db/__pycache__/
+app/__pycache__/
+__pycache__/
+*.pyc
+*.pyo
+
+# Artefatos do modelo (devem ser copiados explicitamente se necessário)
+# ml/model.pkl
+# ml/label_encoder.pkl
+# ml/metrics.json
+
+# Controle de versão e CI
+.git/
+.github/
+.gitignore
+
+# Ferramentas de desenvolvimento
+.venv/
+venv/
+.mypy_cache/
+.pytest_cache/
+
+# Editor
+.vscode/
+.idea/
