@@ -1,7 +1,5 @@
 # ObesityPredict — Tech Challenge Fase 4 · POSTECH
 
-![CI](https://github.com/gnunes.io/obesity_predict/actions/workflows/ci.yml/badge.svg)
-
 Sistema preditivo hospitalar para classificação de níveis de obesidade.
 
 ## Setup rápido (local)
