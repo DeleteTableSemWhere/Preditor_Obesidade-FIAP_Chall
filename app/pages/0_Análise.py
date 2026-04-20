@@ -12,8 +12,6 @@ import streamlit as st
 
 from app.constants import OBESITY_LABELS_SHORT as OBESITY_LABELS, PALETTE
 
-CSV_PATH = Path(__file__).parent.parent.parent / "data" / "Obesity.csv"
-
 st.set_page_config(page_title="Análise | Preditor de Obesidade", page_icon="📊", layout="wide")
 st.title("📊 Análise Exploratória dos Dados")
 st.caption("Visão geral do dataset utilizado para treinar o modelo preditivo.")
@@ -43,14 +41,34 @@ TRANSP_PT   = {
 GENERO_PT   = {"Male": "Masculino", "Female": "Feminino"}
 
 
-@st.cache_data
+@st.cache_data(ttl=3600)
 def load_data() -> pd.DataFrame:
-    df = pd.read_csv(CSV_PATH)
+    from db.supabase_client import get_client
+    client = get_client()
+    all_rows, start = [], 0
+    while True:
+        resp = (
+            client.table("obesity_data")
+            .select("*")
+            .range(start, start + 999)
+            .execute()
+        )
+        all_rows.extend(resp.data)
+        if len(resp.data) < 1000:
+            break
+        start += 1000
+    df = pd.DataFrame(all_rows)
     df.columns = [c.strip() for c in df.columns]
+    # Normaliza nomes para maiúsculas (padrão do CSV original) so the rest of the page works unchanged
+    df = df.rename(columns={
+        "age": "Age", "height": "Height", "weight": "Weight", "gender": "Gender",
+        "favc": "FAVC", "fcvc": "FCVC", "ncp": "NCP", "caec": "CAEC",
+        "smoke": "SMOKE", "ch2o": "CH2O", "scc": "SCC", "faf": "FAF",
+        "tue": "TUE", "calc": "CALC", "mtrans": "MTRANS", "obesity": "Obesity",
+    })
     df["Classe"] = df["Obesity"].map(OBESITY_LABELS).fillna(df["Obesity"])
     df["BMI"]    = df["Weight"] / (df["Height"] ** 2)
     df["Gênero"] = df["Gender"].map(GENERO_PT)
-    # Traduções para uso nos gráficos categóricos
     for col, mapa in [("FAVC", SIM_NAO), ("SMOKE", SIM_NAO), ("SCC", SIM_NAO),
                       ("family_history", SIM_NAO), ("CAEC", FREQ_PT),
                       ("CALC", FREQ_PT), ("MTRANS", TRANSP_PT)]:
