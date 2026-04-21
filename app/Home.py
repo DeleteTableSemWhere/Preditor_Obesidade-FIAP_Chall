@@ -11,6 +11,13 @@ st.set_page_config(
     initial_sidebar_state="expanded",
 )
 
+# ── DEBUG TEMPORÁRIO ─────────────────────────────────────────────────────────
+try:
+    st.write("URL:", st.secrets["SUPABASE_URL"])
+    st.write("KEY início:", st.secrets["SUPABASE_KEY"][:20])
+except Exception as e:
+    st.error(f"Secrets não encontrados: {e}")
+
 # ── Estilos ───────────────────────────────────────────────────────────────────
 st.markdown("""
 <style>
