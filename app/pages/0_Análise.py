@@ -177,7 +177,6 @@ fig_sc = px.scatter(
     df, x="Weight", y="BMI", color="Classe",
     color_discrete_map=COLOR_MAP,
     opacity=0.4,
-    trendline="ols",
     labels={"Weight": "Peso (kg)", "BMI": "IMC"},
     category_orders={"Classe": OBESITY_ORDER},
 )
