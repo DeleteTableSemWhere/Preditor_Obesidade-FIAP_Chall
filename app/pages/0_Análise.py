@@ -121,7 +121,7 @@ fig_dist = px.bar(
     color_discrete_map=COLOR_MAP, text_auto=True,
 )
 fig_dist.update_layout(showlegend=False, xaxis_tickangle=-30)
-st.plotly_chart(fig_dist, use_container_width=True)
+st.plotly_chart(fig_dist)
 
 st.divider()
 
@@ -135,7 +135,7 @@ with col1:
     fig_gen = px.bar(gen, x="Gênero", y="Contagem", color="Gênero",
                      color_discrete_sequence=["#5DADE2", "#F1948A"], text_auto=True)
     fig_gen.update_layout(showlegend=False)
-    st.plotly_chart(fig_gen, use_container_width=True)
+    st.plotly_chart(fig_gen)
 
 with col2:
     st.subheader("Classe por Gênero")
@@ -146,7 +146,7 @@ with col2:
         category_orders={"Classe": OBESITY_ORDER},
     )
     fig_gc.update_layout(xaxis_tickangle=-30)
-    st.plotly_chart(fig_gc, use_container_width=True)
+    st.plotly_chart(fig_gc)
 
 st.divider()
 
@@ -167,7 +167,7 @@ fig_box = px.box(
     points=False,
 )
 fig_box.update_layout(showlegend=False, xaxis_tickangle=-30)
-st.plotly_chart(fig_box, use_container_width=True)
+st.plotly_chart(fig_box)
 
 st.divider()
 
@@ -181,7 +181,7 @@ fig_sc = px.scatter(
     category_orders={"Classe": OBESITY_ORDER},
 )
 fig_sc.update_layout(legend=dict(orientation="h", y=-0.2))
-st.plotly_chart(fig_sc, use_container_width=True)
+st.plotly_chart(fig_sc)
 
 st.divider()
 
@@ -208,7 +208,7 @@ fig_cat = px.bar(
     labels={cat_col: CAT_MAP[cat_col]},
 )
 fig_cat.update_layout(xaxis_tickangle=-20, legend=dict(orientation="h", y=-0.3))
-st.plotly_chart(fig_cat, use_container_width=True)
+st.plotly_chart(fig_cat)
 
 st.divider()
 
@@ -225,4 +225,4 @@ fig_corr = px.imshow(
     zmin=-1, zmax=1, aspect="auto",
 )
 fig_corr.update_layout(height=500)
-st.plotly_chart(fig_corr, use_container_width=True)
+st.plotly_chart(fig_corr)

@@ -125,7 +125,7 @@ with st.form("prediction_form"):
                                                 list(TUE_OPT.keys()))])
         mtrans_pt = st.selectbox("Transporte principal", list(TRANSP.keys()))
 
-    submitted = st.form_submit_button("🔍 Realizar Previsão", use_container_width=True)
+    submitted = st.form_submit_button("🔍 Realizar Previsão")
 
 
 # ── Predição e exibição ───────────────────────────────────────────────────────
@@ -159,7 +159,7 @@ if submitted:
     col_gauge, col_proba = st.columns([1, 1])
 
     with col_gauge:
-        st.plotly_chart(build_gauge(predicted_class, max_prob), use_container_width=True)
+        st.plotly_chart(build_gauge(predicted_class, max_prob))
 
     with col_proba:
         st.subheader("Probabilidade por Classe")

@@ -76,4 +76,4 @@ display = display.rename(columns={
     "age":         "Idade",
 })
 display["Confiança"] = display["Confiança"].map("{:.1%}".format)
-st.dataframe(display, use_container_width=True, hide_index=True)
+st.dataframe(display, hide_index=True)

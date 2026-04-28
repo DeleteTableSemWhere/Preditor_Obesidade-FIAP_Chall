@@ -48,7 +48,7 @@ and Physical Condition* (77% dados sintéticos + 23% reais coletados via questio
 st.header("Arquitetura do Sistema")
 _arch_img = ROOT / "app" / "assets" / "architecture.png"
 if _arch_img.exists():
-    st.image(str(_arch_img), use_container_width=True)
+    st.image(str(_arch_img))
 else:
     st.warning("Imagem de arquitetura não encontrada.")
 
@@ -200,7 +200,7 @@ alimentação, atividade física, histórico familiar e estilo de vida. Com 83.5
                         color="Acurácia", color_continuous_scale="Blues",
                         range_y=[range_min, 1.0])
         fig_cv.update_layout(yaxis_tickformat=".0%", showlegend=False)
-        st.plotly_chart(fig_cv, use_container_width=True)
+        st.plotly_chart(fig_cv)
     else:
         st.warning("CV scores não disponíveis no modelo atual.")
 
@@ -228,7 +228,7 @@ alimentação, atividade física, histórico familiar e estilo de vida. Com 83.5
             legend=dict(orientation="v", x=1.01, y=1),
             height=500,
         )
-        st.plotly_chart(fig_roc, use_container_width=True)
+        st.plotly_chart(fig_roc)
 
     # Matriz de confusão
     st.subheader("Matriz de Confusão (Hold-out)")
@@ -245,7 +245,7 @@ alimentação, atividade física, histórico familiar e estilo de vida. Com 83.5
     )
     fig_cm["data"][0]["xgap"] = 2
     fig_cm["data"][0]["ygap"] = 2
-    st.plotly_chart(fig_cm, use_container_width=True)
+    st.plotly_chart(fig_cm)
 
     # Análise de erros
     st.subheader("Análise de Erros")
@@ -271,21 +271,22 @@ alimentação, atividade física, histórico familiar e estilo de vida. Com 83.5
                 "F1-Score": f"{r['f1-score']:.1%}",
                 "Suporte": int(r["support"]),
             })
-    st.dataframe(pd.DataFrame(rows), use_container_width=True, hide_index=True)
+    st.dataframe(pd.DataFrame(rows), hide_index=True)
 
 # ── Feature importance ───────────────────────────────────────────────────────
 st.header("Feature Importance")
 
 if MODEL_PATH.exists():
     try:
+        from ml.train import ENGINEERED_NUMERIC, CATEGORICAL_FEATURES
         pipeline, _  = load_artifacts()
         rf           = pipeline.named_steps["classifier"]
         preprocessor = pipeline.named_steps["preprocessor"]
 
-        num_features = preprocessor.transformers_[0][2]
-        cat_encoder  = preprocessor.transformers_[1][1]
-        cat_features = cat_encoder.get_feature_names_out(preprocessor.transformers_[1][2])
-        all_features = list(num_features) + list(cat_features)
+        # Usa constantes do treino para evitar _RemainderColsList (incompatibilidade sklearn)
+        cat_encoder  = preprocessor.named_transformers_["cat"]
+        cat_features = cat_encoder.get_feature_names_out(CATEGORICAL_FEATURES)
+        all_features = list(ENGINEERED_NUMERIC) + list(cat_features)
 
         fi_df = (
             pd.DataFrame({"Feature": all_features, "Importância": rf.feature_importances_})
@@ -298,7 +299,7 @@ if MODEL_PATH.exists():
             title="Top 20 Features por Importância (Gini)",
         )
         fig_fi.update_layout(yaxis={"autorange": "reversed"}, height=550)
-        st.plotly_chart(fig_fi, use_container_width=True)
+        st.plotly_chart(fig_fi)
         st.caption(
             "Com a remoção de height e weight, age e family_history emergem como os principais "
             "preditores. Isso é consistente com a literatura médica: envelhecimento e predisposição "
@@ -310,20 +311,6 @@ if MODEL_PATH.exists():
         st.warning(f"Não foi possível carregar feature importance: {exc}")
 else:
     st.info("Modelo não encontrado. Execute `python -m ml.train`.")
-
-# ── Classes alvo ─────────────────────────────────────────────────────────────
-st.header("Classes de Saída")
-st.markdown("""
-| Classe | Significado clínico |
-|--------|---------------------|
-| Peso Insuficiente | IMC < 18.5 |
-| Peso Normal | IMC 18.5 – 24.9 |
-| Sobrepeso Nível I | IMC 25.0 – 27.4 |
-| Sobrepeso Nível II | IMC 27.5 – 29.9 |
-| Obesidade Tipo I | IMC 30.0 – 34.9 |
-| Obesidade Tipo II | IMC 35.0 – 39.9 |
-| Obesidade Tipo III | IMC ≥ 40.0 |
-""")
 
 # ── Limitações e Próximos Passos ─────────────────────────────────────────────
 st.header("⚠️ Limitações e Próximos Passos")
