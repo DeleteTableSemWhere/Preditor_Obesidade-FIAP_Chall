@@ -175,6 +175,16 @@ def train() -> None:
     cm = confusion_matrix(y_test, y_pred).tolist()
     trained_at = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
 
+    # Nomes das features extraídos aqui (versão sklearn consistente com o treino)
+    cat_encoder   = pipeline.named_steps["preprocessor"].named_transformers_["cat"]
+    cat_feat_names = cat_encoder.get_feature_names_out(CATEGORICAL_FEATURES).tolist()
+    all_feat_names = list(ENGINEERED_NUMERIC) + cat_feat_names
+    feat_importances = [
+        {"feature": name, "importance": round(float(imp), 6)}
+        for name, imp in zip(all_feat_names, pipeline.named_steps["classifier"].feature_importances_)
+    ]
+    feat_importances.sort(key=lambda x: x["importance"], reverse=True)
+
     metrics = {
         "trained_at": trained_at,
         "n_samples": len(X),
@@ -189,6 +199,7 @@ def train() -> None:
         "class_names": list(le.classes_),
         "confusion_matrix": cm,
         "classification_report": report,
+        "feature_importances": feat_importances,
     }
     METRICS_PATH.write_text(json.dumps(metrics, indent=2))
     print(f"Métricas salvas em {METRICS_PATH}")

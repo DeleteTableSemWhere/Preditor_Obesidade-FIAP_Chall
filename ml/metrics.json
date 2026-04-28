@@ -1,5 +1,5 @@
 {
-  "trained_at": "2026-04-28T00:53:25Z",
+  "trained_at": "2026-04-28T01:23:46Z",
   "n_samples": 2111,
   "sklearn_version": "1.6.1",
   "test_accuracy": 0.8345,
@@ -1037,5 +1037,131 @@
       "f1-score": 0.8354414024798931,
       "support": 423.0
     }
-  }
+  },
+  "feature_importances": [
+    {
+      "feature": "age",
+      "importance": 0.127437
+    },
+    {
+      "feature": "fcvc",
+      "importance": 0.126927
+    },
+    {
+      "feature": "ncp",
+      "importance": 0.076122
+    },
+    {
+      "feature": "tue",
+      "importance": 0.060846
+    },
+    {
+      "feature": "ch2o",
+      "importance": 0.060744
+    },
+    {
+      "feature": "faf",
+      "importance": 0.053334
+    },
+    {
+      "feature": "lifestyle_score",
+      "importance": 0.053203
+    },
+    {
+      "feature": "gender_Female",
+      "importance": 0.048977
+    },
+    {
+      "feature": "activity_hydration",
+      "importance": 0.048038
+    },
+    {
+      "feature": "gender_Male",
+      "importance": 0.043843
+    },
+    {
+      "feature": "family_history_yes",
+      "importance": 0.037816
+    },
+    {
+      "feature": "caec_Sometimes",
+      "importance": 0.03664
+    },
+    {
+      "feature": "calc_Sometimes",
+      "importance": 0.036006
+    },
+    {
+      "feature": "family_history_no",
+      "importance": 0.031343
+    },
+    {
+      "feature": "calc_no",
+      "importance": 0.030003
+    },
+    {
+      "feature": "caec_Frequently",
+      "importance": 0.026623
+    },
+    {
+      "feature": "mtrans_Public_Transportation",
+      "importance": 0.024897
+    },
+    {
+      "feature": "mtrans_Automobile",
+      "importance": 0.019992
+    },
+    {
+      "feature": "favc_no",
+      "importance": 0.016972
+    },
+    {
+      "feature": "favc_yes",
+      "importance": 0.015838
+    },
+    {
+      "feature": "scc_yes",
+      "importance": 0.00665
+    },
+    {
+      "feature": "caec_no",
+      "importance": 0.005324
+    },
+    {
+      "feature": "scc_no",
+      "importance": 0.005119
+    },
+    {
+      "feature": "calc_Frequently",
+      "importance": 0.002856
+    },
+    {
+      "feature": "caec_Always",
+      "importance": 0.002356
+    },
+    {
+      "feature": "mtrans_Walking",
+      "importance": 0.001105
+    },
+    {
+      "feature": "smoke_no",
+      "importance": 0.000497
+    },
+    {
+      "feature": "smoke_yes",
+      "importance": 0.000492
+    },
+    {
+      "feature": "calc_Always",
+      "importance": 0.0
+    },
+    {
+      "feature": "mtrans_Bike",
+      "importance": 0.0
+    },
+    {
+      "feature": "mtrans_Motorbike",
+      "importance": 0.0
+    }
+  ]
 }

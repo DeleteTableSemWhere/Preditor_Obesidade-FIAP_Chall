@@ -17,7 +17,6 @@ import plotly.graph_objects as go
 import streamlit as st
 
 from app.constants import OBESITY_LABELS_SHORT
-from ml.predict import load_artifacts
 
 ROOT         = Path(__file__).parent.parent.parent
 MODEL_PATH   = ROOT / "ml" / "model.pkl"
@@ -276,41 +275,26 @@ alimentação, atividade física, histórico familiar e estilo de vida. Com 83.5
 # ── Feature importance ───────────────────────────────────────────────────────
 st.header("Feature Importance")
 
-if MODEL_PATH.exists():
-    try:
-        from ml.train import ENGINEERED_NUMERIC, CATEGORICAL_FEATURES
-        pipeline, _  = load_artifacts()
-        rf           = pipeline.named_steps["classifier"]
-        preprocessor = pipeline.named_steps["preprocessor"]
-
-        # Usa constantes do treino para evitar _RemainderColsList (incompatibilidade sklearn)
-        cat_encoder  = preprocessor.named_transformers_["cat"]
-        cat_features = cat_encoder.get_feature_names_out(CATEGORICAL_FEATURES)
-        all_features = list(ENGINEERED_NUMERIC) + list(cat_features)
-
-        fi_df = (
-            pd.DataFrame({"Feature": all_features, "Importância": rf.feature_importances_})
-            .sort_values("Importância", ascending=False)
-            .head(20)
-        )
-        fig_fi = px.bar(
-            fi_df, x="Importância", y="Feature", orientation="h",
-            color="Importância", color_continuous_scale="Blues",
-            title="Top 20 Features por Importância (Gini)",
-        )
-        fig_fi.update_layout(yaxis={"autorange": "reversed"}, height=550)
-        st.plotly_chart(fig_fi)
-        st.caption(
-            "Com a remoção de height e weight, age e family_history emergem como os principais "
-            "preditores. Isso é consistente com a literatura médica: envelhecimento e predisposição "
-            "genética são fatores de risco consolidados para obesidade. "
-            "Hábitos como FAVC (consumo de hipercalóricos) e FAF (atividade física) aparecem em "
-            "seguida, confirmando que o modelo aprendeu padrões comportamentais relevantes."
-        )
-    except Exception as exc:
-        st.warning(f"Não foi possível carregar feature importance: {exc}")
+fi_data = metrics.get("feature_importances") if METRICS_PATH.exists() else None
+if fi_data:
+    fi_df = pd.DataFrame(fi_data).head(20)
+    fi_df.columns = ["Feature", "Importância"]
+    fig_fi = px.bar(
+        fi_df, x="Importância", y="Feature", orientation="h",
+        color="Importância", color_continuous_scale="Blues",
+        title="Top 20 Features por Importância (Gini)",
+    )
+    fig_fi.update_layout(yaxis={"autorange": "reversed"}, height=550)
+    st.plotly_chart(fig_fi)
+    st.caption(
+        "Com a remoção de height e weight, age e family_history emergem como os principais "
+        "preditores. Isso é consistente com a literatura médica: envelhecimento e predisposição "
+        "genética são fatores de risco consolidados para obesidade. "
+        "Hábitos como FAVC (consumo de hipercalóricos) e FAF (atividade física) aparecem em "
+        "seguida, confirmando que o modelo aprendeu padrões comportamentais relevantes."
+    )
 else:
-    st.info("Modelo não encontrado. Execute `python -m ml.train`.")
+    st.info("Feature importance não disponível. Execute `python -m ml.train` para gerá-la.")
 
 # ── Limitações e Próximos Passos ─────────────────────────────────────────────
 st.header("⚠️ Limitações e Próximos Passos")
