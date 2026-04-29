@@ -5,5 +5,4 @@ __pycache__/
 venv/
 ml/model_*.pkl
 ml/label_encoder_*.pkl
-data/
 .streamlit/secrets.toml
