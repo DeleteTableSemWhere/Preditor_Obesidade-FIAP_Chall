@@ -1,4 +1,4 @@
-# [ObesityPredict: Inteligência Artificial para Triagem de Obesidade](https://preditor-obesidade.streamlit.app)
+# [ObesityPredict: Inteligência Artificial para Triagem de Obesidade](https://preditor-obesidade-fiapchall-iouqvcxqrk6shsabazdbgz.streamlit.app/)
 
 ![Status do Projeto](https://img.shields.io/badge/Status-Finalizado-success)
 ![Acurácia](https://img.shields.io/badge/Acurácia_Teste-84%25-brightgreen)
