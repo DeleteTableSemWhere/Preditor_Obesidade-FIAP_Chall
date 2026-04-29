@@ -154,21 +154,51 @@ docker-compose up --build
 
 ## Autores
 
-Desenvolvido como parte do Tech Challenge (Fase 4) da Pós-Tech Data Analytics (FIAP).
+Desenvolvido como parte do Tech Challenge (Fase 2) da Pós-Tech Data Analytics (FIAP).
 
 <div align="center">
 <table>
   <tr>
     <td align="center">
+      <a href="https://github.com/BrunoAssis12">
+        <img src="https://github.com/BrunoAssis12.png" width="100px;" alt=""/>
+        <br /><sub><b>Bruno Assis</b></sub>
+      </a><br />
+      🚀 Data Scientist
+    </td>
+    <td align="center">
       <a href="https://github.com/gnunes-io">
         <img src="https://github.com/gnunes-io.png" width="100px;" alt=""/>
         <br /><sub><b>Gabriel Nunes</b></sub>
       </a><br />
-      📊 Data Analyst
+      ⚙️ Data Architect
+    </td>
+    <td align="center">
+      <a href="https://github.com/Jonathan-Paixao">
+        <img src="https://github.com/Jonathan-Paixao.png" width="100px;" alt=""/>
+        <br /><sub><b>Jonathan Paixão</b></sub>
+      </a><br />
+      🐍 Python Dev
+    </td>
+    <td align="center">
+      <a href="https://github.com/rafaelvieiravidal-glitch">
+        <img src="https://github.com/rafaelvieiravidal-glitch.png" width="100px;" alt=""/>
+        <br /><sub><b>Rafael Vieira</b></sub>
+      </a><br />
+      📉 Quant
+    </td>
+    <td align="center">
+      <a href="#">
+        <img src="https://github.com/ghost.png" width="100px;" alt=""/>
+        <br /><sub><b>Wagner da Silva</b></sub>
+      </a><br />
+      🧠 AI Engineer
     </td>
   </tr>
 </table>
 </div>
+
+<br>
 
 ---
 
