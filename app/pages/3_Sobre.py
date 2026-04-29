@@ -16,11 +16,10 @@ import plotly.figure_factory as ff
 import plotly.graph_objects as go
 import streamlit as st
 
-from app.constants import OBESITY_LABELS_SHORT
+from app.constants import OBESITY_LABELS_SHORT, PALETTE
 
 ROOT         = Path(__file__).parent.parent.parent
 MODEL_PATH   = ROOT / "ml" / "model.pkl"
-LE_PATH      = ROOT / "ml" / "label_encoder.pkl"
 METRICS_PATH = ROOT / "ml" / "metrics.json"
 
 def fmt_ts(ts: str) -> str:
@@ -90,6 +89,7 @@ st.markdown("""
 # ── Métricas do modelo ───────────────────────────────────────────────────────
 st.header("Métricas do Modelo")
 
+metrics: dict = {}
 if not METRICS_PATH.exists():
     st.info("Métricas não encontradas. Execute `python -m ml.train` para gerá-las.")
 else:
@@ -210,7 +210,7 @@ alimentação, atividade física, histórico familiar e estilo de vida. Com 83.5
         fig_roc = go.Figure()
         fig_roc.add_shape(type="line", x0=0, y0=0, x1=1, y1=1,
                           line=dict(dash="dash", color="gray", width=1))
-        colors = px.colors.qualitative.Set2
+        colors = PALETTE
         classes_roc = list(roc_data.keys())
         for i, cls in enumerate(classes_roc):
             d = roc_data[cls]
@@ -275,7 +275,7 @@ alimentação, atividade física, histórico familiar e estilo de vida. Com 83.5
 # ── Feature importance ───────────────────────────────────────────────────────
 st.header("Feature Importance")
 
-fi_data = metrics.get("feature_importances") if METRICS_PATH.exists() else None
+fi_data = metrics.get("feature_importances")
 if fi_data:
     fi_df = pd.DataFrame(fi_data).head(20)
     fi_df.columns = ["Feature", "Importância"]

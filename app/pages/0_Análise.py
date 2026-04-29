@@ -10,7 +10,7 @@ import pandas as pd
 import plotly.express as px
 import streamlit as st
 
-from app.constants import OBESITY_LABELS_SHORT as OBESITY_LABELS, PALETTE
+from app.constants import OBESITY_LABELS_SHORT as OBESITY_LABELS, PALETTE, GENERO_PT
 
 st.set_page_config(page_title="Análise | Preditor de Obesidade", page_icon="📊", layout="wide")
 st.title("📊 Análise Exploratória dos Dados")
@@ -38,28 +38,13 @@ TRANSP_PT   = {
     "Automobile": "Automóvel", "Motorbike": "Moto", "Bike": "Bicicleta",
     "Public_Transportation": "Transp. Público", "Walking": "A Pé",
 }
-GENERO_PT   = {"Male": "Masculino", "Female": "Feminino"}
 
 
 @st.cache_data(ttl=3600)
 def load_data() -> pd.DataFrame:
-    from db.supabase_client import get_client
-    client = get_client()
-    all_rows, start = [], 0
-    while True:
-        resp = (
-            client.table("obesity_data")
-            .select("*")
-            .range(start, start + 999)
-            .execute()
-        )
-        all_rows.extend(resp.data)
-        if len(resp.data) < 1000:
-            break
-        start += 1000
-    df = pd.DataFrame(all_rows)
+    from db.supabase_client import fetch_all
+    df = pd.DataFrame(fetch_all("obesity_data"))
     df.columns = [c.strip() for c in df.columns]
-    # Normaliza nomes para maiúsculas (padrão do CSV original) so the rest of the page works unchanged
     df = df.rename(columns={
         "age": "Age", "height": "Height", "weight": "Weight", "gender": "Gender",
         "favc": "FAVC", "fcvc": "FCVC", "ncp": "NCP", "caec": "CAEC",

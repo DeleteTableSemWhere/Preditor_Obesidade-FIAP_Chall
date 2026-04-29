@@ -10,32 +10,16 @@ sys.path.insert(0, str(Path(__file__).parent.parent.parent))
 import pandas as pd
 import streamlit as st
 
-from db.supabase_client import get_client
-from app.constants import OBESITY_LABELS_SHORT as OBESITY_LABELS
+from db.supabase_client import fetch_all
+from app.constants import OBESITY_LABELS_SHORT as OBESITY_LABELS, GENERO_PT
 
 st.set_page_config(page_title="Logs | Preditor de Obesidade", page_icon="📋", layout="wide")
 st.title("📋 Logs de Predições")
 
-GENERO_PT = {"Male": "Masculino", "Female": "Feminino"}
-
 
 @st.cache_data(ttl=60)
 def load_logs() -> pd.DataFrame:
-    client = get_client()
-    all_rows, start = [], 0
-    while True:
-        response = (
-            client.table("predictions_log")
-            .select("*")
-            .order("created_at", desc=True)
-            .range(start, start + 999)
-            .execute()
-        )
-        all_rows.extend(response.data)
-        if len(response.data) < 1000:
-            break
-        start += 1000
-    df = pd.DataFrame(all_rows)
+    df = pd.DataFrame(fetch_all("predictions_log", order_by="created_at", desc=True))
     if df.empty:
         return df
     df["created_at"] = (
@@ -65,11 +49,7 @@ st.divider()
 # ── Tabela ───────────────────────────────────────────────────────────────────
 st.subheader("Registros de Predições")
 display = df[["created_at", "Classe", "probability", "age", "Gênero"]].copy()
-display["created_at"] = (
-    display["created_at"]
-    .dt.tz_convert("America/Sao_Paulo")
-    .dt.strftime("%d/%m/%Y %H:%M")
-)
+display["created_at"] = display["created_at"].dt.strftime("%d/%m/%Y %H:%M")
 display = display.rename(columns={
     "created_at": "Data/Hora",
     "probability": "Confiança",

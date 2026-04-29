@@ -35,3 +35,18 @@ def get_client() -> Client:
                     )
                 _client = create_client(url, key)
     return _client
+
+
+def fetch_all(table: str, *, order_by: str | None = None, desc: bool = False) -> list[dict]:
+    client = get_client()
+    all_rows, start, batch = [], 0, 1000
+    while True:
+        q = client.table(table).select("*")
+        if order_by:
+            q = q.order(order_by, desc=desc)
+        rows = q.range(start, start + batch - 1).execute().data
+        all_rows.extend(rows)
+        if len(rows) < batch:
+            break
+        start += batch
+    return all_rows

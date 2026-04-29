@@ -23,3 +23,5 @@ OBESITY_LABELS_SHORT = {
 }
 
 OBESITY_ORDER = list(OBESITY_LABELS.keys())
+
+GENERO_PT = {"Male": "Masculino", "Female": "Feminino"}

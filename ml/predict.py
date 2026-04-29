@@ -1,11 +1,3 @@
-"""
-Helpers de inferência utilizados pelo front-end Streamlit.
-
-Funções
--------
-load_artifacts()    → carrega modelo + label encoder (cache via @st.cache_resource ou singleton)
-predict(input_dict) → retorna (classe_predita: str, probabilidades: dict)
-"""
 import joblib
 import numpy as np
 import pandas as pd
@@ -19,7 +11,6 @@ LABEL_ENCODER_PATH = Path(__file__).parent / "label_encoder.pkl"
 
 
 def _load_impl():
-    """Carrega os artefatos do disco sem cache."""
     pipeline = joblib.load(MODEL_PATH)
     le       = joblib.load(LABEL_ENCODER_PATH)
     return pipeline, le
@@ -29,25 +20,11 @@ try:
     import streamlit as st
     load_artifacts = st.cache_resource(show_spinner="Carregando modelo...")(_load_impl)
 except ImportError:
-    _cache: list = []
-
-    def load_artifacts():
-        if not _cache:
-            _cache.extend(_load_impl())
-        return _cache[0], _cache[1]
+    from functools import lru_cache
+    load_artifacts = lru_cache(maxsize=1)(_load_impl)
 
 
 def predict(input_dict: dict[str, Any]) -> tuple[str, dict[str, float]]:
-    """
-    Parâmetros
-    ----------
-    input_dict : valores brutos das features no formato esperado pelo treino
-
-    Retorna
-    -------
-    classe_predita  : rótulo legível do nível de obesidade
-    probabilidades  : {rótulo_classe: probabilidade} para todas as classes
-    """
     pipeline, le = load_artifacts()
 
     df    = pd.DataFrame([input_dict])

@@ -11,8 +11,6 @@ sys.path.insert(0, str(Path(__file__).parent.parent.parent))
 import streamlit as st
 import plotly.graph_objects as go
 
-ROOT = Path(__file__).parent.parent.parent
-
 from app.constants import OBESITY_LABELS, OBESITY_ORDER
 
 st.set_page_config(page_title="Previsão | ObesityPredict", page_icon="🔬", layout="wide")
@@ -42,6 +40,10 @@ st.caption("Preencha os dados do paciente para obter a predição do modelo.")
 
 # ── Constantes ────────────────────────────────────────────────────────────────
 GAUGE_COLORS = ["#2ECC71","#82E0AA","#F7DC6F","#F0A500","#E67E22","#E74C3C","#922B21"]
+GAUGE_STEP_COLORS = [
+    f"rgba({int(c[1:3],16)},{int(c[3:5],16)},{int(c[5:],16)},0.25)"
+    for c in GAUGE_COLORS
+]
 
 # Mapeamentos PT → EN para que o modelo receba os valores originais do treino
 SIM_NAO = {"Sim": "yes", "Não": "no"}
@@ -74,12 +76,7 @@ def build_gauge(predicted_class: str, probability: float) -> go.Figure:
             },
             "bar": {"color": GAUGE_COLORS[idx]},
             "steps": [
-                {
-                    "range": [i, i + 1],
-                    "color": f"rgba({int(GAUGE_COLORS[i][1:3],16)},"
-                             f"{int(GAUGE_COLORS[i][3:5],16)},"
-                             f"{int(GAUGE_COLORS[i][5:],16)},0.25)"
-                }
+                {"range": [i, i + 1], "color": GAUGE_STEP_COLORS[i]}
                 for i in range(7)
             ],
         },

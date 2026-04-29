@@ -1,17 +1,8 @@
-"""
-Script de treinamento offline.
-
-Lê os dados da tabela `obesity_data` no Supabase, aplica feature engineering,
-treina um pipeline RandomForestClassifier, avalia o modelo e salva os artefatos
-em ml/model.pkl e as métricas em ml/metrics.json.
-
-Uso:
-    python -m ml.train
-"""
 import os
 os.environ["LOKY_MAX_CPU_COUNT"] = "1"
 
 import json
+import shutil
 import joblib
 import numpy as np
 import pandas as pd
@@ -31,7 +22,7 @@ from sklearn.model_selection import (
 from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import LabelEncoder, OneHotEncoder, StandardScaler
 
-from db.supabase_client import get_client
+from db.supabase_client import fetch_all
 
 MODEL_PATH = Path(__file__).parent / "model.pkl"
 LABEL_ENCODER_PATH = Path(__file__).parent / "label_encoder.pkl"
@@ -59,28 +50,10 @@ def add_engineered_features(df: pd.DataFrame) -> pd.DataFrame:
 ENGINEERED_NUMERIC = NUMERIC_FEATURES + ["activity_hydration", "lifestyle_score"]
 
 
-# ── Carregamento dos dados (com paginação) ────────────────────────────────────
-
 def load_data() -> pd.DataFrame:
-    client = get_client()
-    all_rows = []
-    batch_size = 1000
-    start = 0
-    while True:
-        response = (
-            client.table("obesity_data")
-            .select("*")
-            .range(start, start + batch_size - 1)
-            .execute()
-        )
-        rows = response.data
-        all_rows.extend(rows)
-        if len(rows) < batch_size:
-            break
-        start += batch_size
-    df = pd.DataFrame(all_rows)
-    print(f"{len(df)} linhas carregadas do Supabase.")
-    return df
+    rows = fetch_all("obesity_data")
+    print(f"{len(rows)} linhas carregadas do Supabase.")
+    return pd.DataFrame(rows)
 
 
 def prepare(df: pd.DataFrame):
@@ -165,15 +138,14 @@ def train() -> None:
     print(f"Acurácia no hold-out: {acc:.4f}")
     print(f"Macro-F1 no hold-out: {macro_f1:.4f}")
     print(f"ROC-AUC Macro (OvR):  {roc_auc:.4f}\n")
-    print(classification_report(y_test, y_pred, target_names=le.classes_))
 
     if acc < 0.75:
         print("AVISO: acurácia abaixo do limite mínimo de 75%.")
 
-    # Salva métricas em JSON
     report = classification_report(y_test, y_pred, target_names=le.classes_, output_dict=True)
     cm = confusion_matrix(y_test, y_pred).tolist()
-    trained_at = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
+    now = datetime.now(timezone.utc)
+    trained_at = now.strftime("%Y-%m-%dT%H:%M:%SZ")
 
     # Nomes das features extraídos aqui (versão sklearn consistente com o treino)
     cat_encoder   = pipeline.named_steps["preprocessor"].named_transformers_["cat"]
@@ -209,15 +181,14 @@ def train() -> None:
         f.write(json.dumps(metrics) + "\n")
     print(f"Histórico atualizado em {history_path}")
 
-    # Persiste os artefatos — alias latest + cópia versionada por timestamp
-    timestamp = datetime.now(timezone.utc).strftime("%Y%m%d_%H%M%S")
+    timestamp = now.strftime("%Y%m%d_%H%M%S")
     versioned_model_path = MODEL_PATH.parent / f"model_{timestamp}.pkl"
     versioned_le_path    = LABEL_ENCODER_PATH.parent / f"label_encoder_{timestamp}.pkl"
 
     joblib.dump(pipeline, MODEL_PATH)
-    joblib.dump(pipeline, versioned_model_path)
+    shutil.copy2(MODEL_PATH, versioned_model_path)
     joblib.dump(le, LABEL_ENCODER_PATH)
-    joblib.dump(le, versioned_le_path)
+    shutil.copy2(LABEL_ENCODER_PATH, versioned_le_path)
     print(f"Modelo salvo em {MODEL_PATH} e {versioned_model_path}")
     print(f"Label encoder salvo em {LABEL_ENCODER_PATH} e {versioned_le_path}")
 
